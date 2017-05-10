@@ -1,0 +1,21 @@
+Package: methods.string
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Author: Erik Johnson
+Maintainer: Erik Johnson <erikbjohn@gmail.com>
+Description: mostly address string cleaning functions
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    stringr,
+    rdrop2,
+    dropbox.data,
+    stringdist,
+    tidyr, 
+    dplyr,
+    utils,
+    stats,
+    data.table
+RoxygenNote: 6.0.1.9000
