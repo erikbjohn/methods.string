@@ -7,7 +7,6 @@
 #' @docType package
 #' @name methods.string
 #' @importFrom dplyr %>%
-NULL
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
@@ -43,14 +42,14 @@ address <- function(DT) {
 #'
 #' @description Extracts and cleans city from cityStateZip based on table lookup and matching.
 #' @param cityStateZip character vector
+#' @param study.cities character vector
 #' @keywords city, clean
 #' @export
 #' @import stringr
 #'     data.table
 #'     stringdist
-clean.city <- function(cityStateZip){
+clean.city <- function(cityStateZip, study.cities){
     city.replace <- NULL
-    load('Data/study.cities.rda')
     # city state zip
     cityStateZip <- str_trim(cityStateZip)
     cityStateZip <- str_replace_all(cityStateZip, ',|-|\\(|\\)', ' ')
@@ -128,12 +127,13 @@ clean.state <- function(state){
 #'
 #' @description Cleans up and standardizes street string. Needed for the street.explode function.
 #' @param street character vector of streets
+#' @param abbrev data.table used for lookup
 #' @keywords street.explode
 #' @export
 #' @import stringr
 #'     data.table
 #'     stats
-clean.street <- function(street){
+clean.street <- function(street, abbrev){
    street.base <-''
     iter <- 0
     while(identical(street, street.base)==FALSE & iter < 6){
@@ -450,12 +450,13 @@ clean.street.unit <- function(vec.chars){
 #'
 #' @description Explodes a single string addresss using explode.street and explode.cityStateZip.
 #' @param DT data.table needs to have fields street, cityStateZip
+#' @param study.cities character vector
 #' @keywords street.num
 #' @export
 #' @import stringr
 #'     data.table
 #'     tidyr
-explode.address <- function(DT){
+explode.address <- function(DT, study.cities){
     street.num <- NULL
     street.num.low <- NULL
     street.num.hi <- NULL
@@ -473,7 +474,7 @@ explode.address <- function(DT){
     DT$street.num.range <- NULL
     DT <- unique(DT)
     # Break out cityStateZip
-    cityStateZip <- explode.cityStateZip(DT$cityStateZip)
+    cityStateZip <- explode.cityStateZip(DT$cityStateZip, study.cities)
     DT$cityStateZip <- NULL
     DT <- DT.table(cbind(DT, cityStateZip))
     DT <- DT[, street.num:=as.integer(street.num)]
@@ -484,12 +485,14 @@ explode.address <- function(DT){
 #'
 #' @description Explodes cityStateZip into city state and zip.
 #' @param address charcater vector with address
+#' @param study.cities character vector
 #' @keywords street.num
 #' @export
 #' @import stringr
 #'     data.table
 #'     stats
-explode.cityStateZip <- function(address){
+explode.cityStateZip <- function(address, study.cities){
+    regex.study.cities <- paste0(study.cities, collapse='|')
     x <- address
     address.cols <- na.omit(str_extract(names(x), '(?i).*.address|cityStateZip($|.*.)'))
     address.col <- names(which.max(lapply(x[,(address.cols),with=FALSE], function(y) length(na.omit(y)))))[1]
@@ -497,9 +500,9 @@ explode.cityStateZip <- function(address){
     # First pass: Extract to the city
     # Find last 'city' location in string
     # abc(?!.*abc)
-    pattern.neg.ahead <- paste0('(?i)(',regex.colorado.cities,')(?!.*(',regex.colorado.cities,'))(.*.|$)')
+    pattern.neg.ahead <- paste0('(?i)(',regex.study.cities,')(?!.*(',regex.study.cities,'))(.*.|$)')
     cityStateZip <- as.data.table(sapply(x,function(y) str_extract(y,pattern=regex(pattern.neg.ahead, perl=TRUE))))
-    pattern.city <- paste0('(?i)(',regex.colorado.cities,')(?!.*(',regex.colorado.cities,'))')
+    pattern.city <- paste0('(?i)(',regex.study.cities,')(?!.*(',regex.study.cities,'))')
     city <- data.table(sapply(cityStateZip,function(y) str_extract(y,pattern=regex(pattern.city, perl=TRUE)),simplify=TRUE, USE.NAMES = FALSE ))
     setnames(city, names(city), 'city')
     zip <- sapply(cityStateZip, extract.zip, USE.NAMES = FALSE)
@@ -512,11 +515,12 @@ explode.cityStateZip <- function(address){
 #'
 #' @description Explodes street, into component pieces for matching, return a data.table.
 #' @param street charcater vector with address
+#' @param abbrev data.table data shipped with package
 #' @keywords explode, street
 #' @export
 #' @import stringr
 #'     data.table
-explode.street <- function(street){
+explode.street <- function(street, abbrev){
     parcels.street.last <- NULL
     street.body <- NULL
     street.cum <- NULL
@@ -707,29 +711,21 @@ extract.zip = function(cityStateZip){
 #'
 #' @description Fills missing zip and city by looking up in parcels.address if it exists.
 #' @param DT data.table with exploded zip city state
+#' @param parcels.address data.table used for lookup values
+#' @param study.cities character vector with city names. Default: colorado cities
+#' @param study.zips character vector with study zip codes Default: denver cmas zips
 #' @keywords fill missing, zip, city, state
 #' @export
 #' @import stringr
 #'     data.table
-#'     dropbox.data
-#'     dplyr
-fill.missing.zip.city <- function(DT){
+#' @importFrom dplyr mutate select one_of group_by_
+fill.missing.zip.city <- function(DT, parcels.address, study.cities, study.zips){
     parcels.address <- NULL
     city <- NULL
     street.num <- NULL
     num.distance <- NULL
     street.num.lookup <- NULL
     print('Attempting to fill missing zip and cities')
-    study.zips <- c(study.zips, '')
-    study.cities <- c(study.cities, '')
-    # load parcels.address
-    parcels.files <- dropbox.data::data.env('parcels')
-    parcels.address.location <- parcels.files$all[parcels.files$all$f.name == 'parcels.address.rdata']$sys_path_file
-    if (length(parcels.address.location==1)){
-        load(parcels.address.location)
-    } else {
-        cat('No access to parcels package dropbox data.Need to run parcels.address file first')
-    }
     # Convert NA values to ''f
     DT <- DT[is.na(zip), zip:='']
     DT <- DT[is.na(city), city:='']

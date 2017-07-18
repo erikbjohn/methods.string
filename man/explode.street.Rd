@@ -4,10 +4,12 @@
 \alias{explode.street}
 \title{explode.street}
 \usage{
-explode.street(street)
+explode.street(street, abbrev)
 }
 \arguments{
 \item{street}{charcater vector with address}
+
+\item{abbrev}{data.table data shipped with package}
 }
 \description{
 Explodes street, into component pieces for matching, return a data.table.

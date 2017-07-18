@@ -4,14 +4,12 @@ Title: What the Package Does (Title Case)
 Version: 0.1.0
 Author: Erik Johnson
 Maintainer: Erik Johnson <erikbjohn@gmail.com>
-Description: mostly address string cleaning functions
+Description: Address string cleaning functions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
     stringr,
-    rdrop2,
-    dropbox.data,
     stringdist,
     tidyr, 
     dplyr,

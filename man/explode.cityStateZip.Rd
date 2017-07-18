@@ -4,10 +4,12 @@
 \alias{explode.cityStateZip}
 \title{explode.cityStateZip}
 \usage{
-explode.cityStateZip(address)
+explode.cityStateZip(address, study.cities)
 }
 \arguments{
 \item{address}{charcater vector with address}
+
+\item{study.cities}{character vector}
 }
 \description{
 Explodes cityStateZip into city state and zip.

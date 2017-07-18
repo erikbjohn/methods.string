@@ -4,10 +4,12 @@
 \alias{explode.address}
 \title{explode.address}
 \usage{
-explode.address(DT)
+explode.address(DT, study.cities)
 }
 \arguments{
 \item{DT}{data.table needs to have fields street, cityStateZip}
+
+\item{study.cities}{character vector}
 }
 \description{
 Explodes a single string addresss using explode.street and explode.cityStateZip.

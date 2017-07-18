@@ -4,10 +4,12 @@
 \alias{clean.city}
 \title{clean.city}
 \usage{
-clean.city(cityStateZip)
+clean.city(cityStateZip, study.cities)
 }
 \arguments{
 \item{cityStateZip}{character vector}
+
+\item{study.cities}{character vector}
 }
 \description{
 Extracts and cleans city from cityStateZip based on table lookup and matching.

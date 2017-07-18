@@ -4,10 +4,12 @@
 \alias{clean.street}
 \title{clean.street}
 \usage{
-clean.street(street)
+clean.street(street, abbrev)
 }
 \arguments{
 \item{street}{character vector of streets}
+
+\item{abbrev}{data.table used for lookup}
 }
 \description{
 Cleans up and standardizes street string. Needed for the street.explode function.

@@ -5,21 +5,14 @@
 \alias{study.cities}
 \title{study.cities}
 \format{An object of class \code{"character"}.}
-\source{
-\href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R}
-}
 \usage{
 study.cities
 }
 \description{
-A list of front range cities in the study area
+A list of Colorado front range cities
 }
 \examples{
-study.cities
+data(study.cities)
 cat(paste(study.cities, sep=','))
-}
-\references{
-study.cities
-(\href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R})
 }
 \keyword{datasets}

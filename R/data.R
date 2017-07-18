@@ -22,7 +22,7 @@
 
 #' study.cities
 #'
-#' A list of front range cities in the study area
+#' A list of Colorado front range cities
 #'
 #' @docType data
 #'
@@ -32,41 +32,14 @@
 #'
 #' @keywords datasets
 #'
-#' @references study.cities
-#' (\href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R})
-#'
-#' @source \href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R}
-#'
 #' @examples
-#' study.cities
+#' data(study.cities)
 #' cat(paste(study.cities, sep=','))
 "study.cities"
 
-#' regex.colorado.cities
-#'
-#' A regex string containing the same data in study.cities
-#'
-#' @docType data
-#'
-#' @usage regex.colorado.cities
-#'
-#' @format An object of class \code{"character"}.
-#'
-#' @keywords datasets
-#'
-#' @references regex.colorado.cities
-#' (\href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R})
-#'
-#' @source \href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R}
-#'
-#' @examples
-#' regex.colorado.cities
-#' cat(regex.colorado.cities)
-"regex.colorado.cities"
-
 #' study.zips
 #'
-#' List of all zip codes in the study area
+#' List of Colorado zip codes in the study area
 #'
 #' @docType data
 #'
@@ -77,12 +50,9 @@
 #' @keywords datasets
 #'
 #' @references study.zips
-#' (\href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R})
-#'
-#' @source \href{https://www.dropbox.com/s/ix2fdubcqulb0rj/hash.tables.R?dl=0}{hashtables.R}
 #'
 #' @examples
-#' study.zips
+#' data(study.zips)
 #' cat(min(study.zips), max(study.zips))
 "study.zips"
 
