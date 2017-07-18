@@ -13,33 +13,6 @@ NULL
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
-#' @title address
-#'
-#' @description Conatenates exploded street information back into normal address.
-#' @param DT Datatable containing street.num, street.direction.prefix, street.body, street.type, street.direction.suffix, street.unit, street.unit.type, and city state zip
-#' @keywords address concatenate
-#' @export
-#' @import stringr
-#'     data.table
-address <- function(DT) {
-    street.num <- NULL
-    street.direction.prefix <- NULL
-    street.body <- NULL
-    street.type <- NULL
-    street.direction.suffix <- NULL
-    street.unit <- NULL
-    street.unit.type <- NULL
-    city <- NULL
-    state <- NULL
-    zip <- NULL
-    address <- DT[, address := paste(street.num, street.direction.prefix, street.body,
-                                     street.type, street.direction.suffix, street.unit,
-                                     street.unit.type, paste0(city, ' ', state, ', ', zip))][, address]
-    address <- str_replace_all(address, regex('NA', perl=TRUE), '')
-    address <- str_replace_all(address, regex('(\\s){2,}', perl=TRUE), ' ')
-    address <- str_replace_all(address, regex(' , ', perl=TRUE), ', ')
-    return(address)
-}
 #' @title clean.city
 #'
 #' @description Extracts and cleans city from cityStateZip based on table lookup and matching.
@@ -150,13 +123,12 @@ clean.state <- function(cityStateZip){
 #'
 #' @description Cleans up and standardizes street string. Needed for the street.explode function.
 #' @param street character vector of streets
-#' @param abbrev data.table used for lookup
 #' @keywords street.explode
 #' @export
 #' @import stringr
 #'     data.table
 #'     stats
-clean.street <- function(street, abbrev){
+clean.street <- function(street){
    street.base <-''
     iter <- 0
     while(identical(street, street.base)==FALSE & iter < 6){
@@ -474,7 +446,6 @@ clean.street.unit <- function(vec.chars){
 #' @description Explodes a single string addresss using explode.street and explode.cityStateZip.
 #' @param DT data.table needs to have fields street, cityStateZip
 #' @param study.cities character vector
-#' @param abbrev postal abbreviations data.table
 #' @param lookup.address optional table from main data usually parcels.address
 #' @keywords street.num
 #' @export
@@ -482,7 +453,7 @@ clean.street.unit <- function(vec.chars){
 #'     data.table
 #'     tidyr
 #' @importFrom tidyr gather
-explode.address <- function(DT, study.cities, abbrev, lookup.address=NULL){
+explode.address <- function(DT, study.cities, lookup.address=NULL){
     street.num <- NULL
     street.num.low <- NULL
     street.num.hi <- NULL
@@ -494,7 +465,7 @@ explode.address <- function(DT, study.cities, abbrev, lookup.address=NULL){
      # Break out street
     street <- DT$street
     DT$street <- NULL
-    street.explode <- explode.street(street, abbrev)
+    street.explode <- explode.street(street)
     # Bring it back together (remove old street name from DT)
     DT <- data.table(DT, street.explode)
     DT <- DT[, street.num:=as.integer(street.num)]
@@ -548,12 +519,11 @@ explode.cityStateZip <- function(DT, study.cities){
 #'
 #' @description Explodes street, into component pieces for matching, return a data.table.
 #' @param street charcater vector with address
-#' @param abbrev data.table data shipped with package
 #' @keywords explode, street
 #' @export
 #' @import stringr
 #'     data.table
-explode.street <- function(street, abbrev){
+explode.street <- function(street){
     parcels.street.last <- NULL
     street.body <- NULL
     street.cum <- NULL
@@ -571,7 +541,7 @@ explode.street <- function(street, abbrev){
     street.type<- NULL
     street.unit<- NULL
     street.unit.type<- NULL
-    street <- sapply(street, function(x) clean.street(x, abbrev))
+    street <- sapply(street, function(x) clean.street(x))
     street.explode <- data.table(street=street, street.num = '', street.direction.prefix = '', street.type = '',
                                  street.unit = '', street.unit.type = '', street.direction.suffix='',
                                  street.num.low = '', street.num.hi = '', street.last = '', street.second.last = '')
