@@ -46,7 +46,7 @@ clean.city <- function(cityStateZip, study.cities){
     city.table <- city.table[order(city.search)]
     missing.cities <- city.table[is.na(city.replace), city.search]
     city.table <- city.table[!is.na(city.replace)]
-    matches.pattern <- paste0('(?<=^)',city.table$city.search)
+    matches.pattern <- paste0('(?i)(?<=^)',city.table$city.search)
     matches.replacement <- city.table$city.replace
     if(length(matches.replacement>0)){
         names(matches.replacement) <- matches.pattern
@@ -77,6 +77,32 @@ clean.name <- function(name){
     name <- str_to_title(name)
     return(name)
 }
+#' @title clean.name.key
+#'
+#' @description create a unique name key
+#' @param name character vector with names
+#' @keywords clean anems
+#' @import stringr
+clean.name.key <- function(name){
+    name <- str_trim(gsub('\\&.*.\\;', "'", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub(',|\\.', "", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub('Inc\\_', "Inc", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub("'", "", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub("\\-", " ", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub('[^[:alnum:] ]', "", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub('[\\_]{2,}', '', name, perl=TRUE))
+    name <- str_trim(gsub('( llc| inc)(?= |$)', " ", name, ignore.case = TRUE, perl=TRUE))
+    name <- gsub("'", '', name)
+    name <- gsub("\\.", '', name)
+    name <- gsub("\\.", '', name)
+    name <- tolower(gsub('[^[:alnum:]]', '', name))
+    name <- gsub("llc|group|cooperative", '', name)
+    name <- gsub("coop|center|industry|industries|inc|amp", '', name)
+    name <- gsub("the ", '', name)
+    name <- str_to_lower(name)
+    return(name)
+}
+
 #' @title clean.special
 #'
 #' @description Cleans up some custom strings in the c*star rent data.
@@ -720,6 +746,19 @@ explode.street <- function(street){
 
     return(street.explode)
 }
+#' @title extract.state
+#'
+#' @description Extracts state from cityStateZip.
+#' @param cityStateZip character vector with cityStateZip
+#' @keywords extract, state
+#' @export
+#' @import stringr
+extract.state = function(cityStateZip){
+    cityStateZip <- clean.state(cityStateZip)
+    regex.state.abb <- paste0('(',paste0(lookup.state$abb, collapse='|'), ')')
+    state <- str_extract(cityStateZip, regex(regex.state.abb, perl=TRUE))
+    return(state)
+}
 #' @title extract.zip
 #'
 #' @description Extracts zipcode from cityStateZip.
@@ -731,6 +770,45 @@ extract.zip = function(cityStateZip){
     zip <- str_extract(cityStateZip, regex('(?<=( |^|,|\\w))[0-9]{5,5}', perl=TRUE))
     zip[is.na(zip)] <- ''
     return(zip)
+}
+#' @title fill.missing.state
+#'
+#' @description Fills missing state by querying zips
+#' @param x data.table consisting of address.id and zip
+#' @keywords fill missing, zip, city, state
+#' @export
+#' @import stringr
+#'     data.table
+#' @importFrom dplyr mutate select one_of group_by_
+fill.missing.state <- function(x){
+    if('address.id' %in% names(x)){
+    state <- NULL
+    address.id <- NULL
+    zip <- NULL
+    zip.find <- NULL
+    dt <- x[, .(zip.find=zip, address.id)]
+    setkey(dt, zip.find)
+    setkey(lookup.zips,zip)
+    dt <- lookup.zips[dt]
+    # county by state and fill
+    states.found <- table(dt$state)
+    states.found <- states.found[str_length(names(states.found))==2]
+    states.found.n <- length(states.found)
+    states.found.pct <- states.found/sum(states.found)
+    states.notfound.pct <- states.found/nrow(dt)
+    state.fill <- names(states.found)[which.max(states.found)]
+    if(max(states.found.pct) > 0.9 & max(states.notfound.pct)){
+       state.filled.n <- nrow(dt[zip==''])
+       dt <- dt[zip=='', state:=state.fill]
+       cat('Filled', state.filled.n, 'state records with', state.fill,'based on study consistency')
+    }
+    dt <- dt[, .(address.id, state)]
+    setkey(dt, address.id)
+    return(dt)
+    } else {
+        print('No address.id in methods.string::fill.missing.state. Omitted function')
+        return(x)
+    }
 }
 #' @title fill.missing.zip.city
 #'
