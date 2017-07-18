@@ -149,8 +149,8 @@ clean.state <- function(cityStateZip){
     # Those without abbreviations
     state.search <- unique(states)
     state.search <- state.search[str_length(state.search)>2 & !grepl('[0-9]{1,}', state.search)]
-    states.soundex <- lookup.state[amatch(state.search, name, method='soundex')]$abb
-    states.jw <- lookup.state[amatch(state.search, name, method='jw')]$abb
+    states.soundex <- methods.string::lookup.state[amatch(state.search, name, method='soundex')]$abb
+    states.jw <- methods.string::lookup.state[amatch(state.search, name, method='jw')]$abb
     state.table <- data.table(state.search, states.soundex, states.jw)
     state.table <- state.table[, state.replace:=states.jw]
     state.table <- state.table[is.na(states.jw), state.replace:=states.soundex]
@@ -192,14 +192,14 @@ clean.street <- function(street){
         street <- str_replace(street, 'South Boulder', 'SouthBoulder')
 
         #street <- '28 StandBrighton Blvd'
-        regex.intersection <- paste0('(?<= ',paste0(abbrev[class=='suffix' & search!='Wy', search], collapse='|'),')and')
+        regex.intersection <- paste0('(?<= ',paste0(methods.string::abbrev[class=='suffix' & search!='Wy', search], collapse='|'),')and')
         street <- str_replace(street,regex(regex.intersection, perl=TRUE), ' and ')
 
         #E 17Th Ave @ Park Avenue West'
         street <- str_replace(street, '@', 'and')
 
         #Ste 300 425 S Wilcox St', 'Suite 2400 1600 Broadway'
-        units<- paste0(abbrev[class=='unit' & search != '#',search],collapse='|')
+        units<- paste0(methods.string::abbrev[class=='unit' & search != '#',search],collapse='|')
         regex.unit.start <- paste0('(?i)(?<=^)(',units,')\\s[0-9]{1,}\\s(?=[0-9]{1,1})')
         street <- str_replace(street, regex(regex.unit.start, perl=TRUE), '')
 
@@ -260,7 +260,7 @@ clean.street <- function(street){
         #"1997 And 2000 S Acoma St"'
         street <- str_replace(street,regex('(?<=[0-9]{1,1}) And (?=[0-9]{1,1})', perl=TRUE), '-')
         #990W 6Th Ave Unit 5'
-        abbrev.compass.search <- paste0(abbrev[class=='compass',search], collapse='|')
+        abbrev.compass.search <- paste0(methods.string::abbrev[class=='compass',search], collapse='|')
         str.extract <- str_extract(street,regex(paste0('(?<=^)[0-9]{1,}(',abbrev.compass.search,' )'), perl=TRUE))
         str.direction <- str_extract(str.extract,regex(paste0('(',abbrev.compass.search,')'), perl=TRUE))
         street <- str_replace(street, regex(paste0(str.direction),perl=TRUE), paste0(' ', str.direction))
@@ -284,7 +284,7 @@ clean.street <- function(street){
         #1035 Pearl St 3rd Floor'
         street <- str_replace(street,  '1035 Pearl St 3rd Floor', '1035 Pearl St Floor 3')
         street <- str_replace(street, '2625 East Street Vrain A',  '2625 East St Vrain Street A')
-        # abbrev.suffix <- abbrev[class=='suffix', search]
+        # abbrev.suffix <- methods.string::abbrev[class=='suffix', search]
         # regex.abbrev.suffix <- paste0('(?<= )(', paste0(abbrev.suffix, collapse='|'), ')(?= )')
         # # Speed up
         # abbrev.suffix <- unique(unlist(str_extract_all(street, regex(regex.abbrev.suffix, perl=TRUE))))
@@ -298,8 +298,8 @@ clean.street <- function(street){
         #     street <- str_replace_all(street, str.replace)
         # }
         # Step 3: Get rid of extra spaces and return
-        s <- paste0('(',paste0(paste0(unlist(abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))])),collapse='|'),')')
-        x <- sapply(t(abbrev[class=='unit' & search!='#', .(search, paste0(search,'s'))]), cbind, simplify=TRUE)
+        s <- paste0('(',paste0(paste0(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))])),collapse='|'),')')
+        x <- sapply(t(methods.string::abbrev[class=='unit' & search!='#', .(search, paste0(search,'s'))]), cbind, simplify=TRUE)
 
         # Remove two unit suffixes
         reg.unit <- paste0('(',paste0(paste0(' ',x, ' '), collapse='|'),')')
@@ -308,8 +308,8 @@ clean.street <- function(street){
         street[ids] <- str_trim(str_replace(street[ids], regex(paste0(str_extract(street[ids], regex(pattern.neg.ahead, perl=TRUE)),'(?=$)'), perl=TRUE),''))
 
         # street <- '4228 York Street Unit 104 106-107'
-        t <- paste0('(',paste0(paste0(sort(c(unlist(abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Broadway'))),collapse=' |'),')')
-        u <- paste0('(',paste0(paste0(sort(c(unlist(abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Bay', 'Broadway'))),collapse='|'),')')
+        t <- paste0('(',paste0(paste0(sort(c(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Broadway'))),collapse=' |'),')')
+        u <- paste0('(',paste0(paste0(sort(c(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Bay', 'Broadway'))),collapse='|'),')')
         pattern.neg.ahead <- paste0(t,'(?!.*',u,')(.*.|$)')
         street.tail <- str_extract(street, regex(pattern.neg.ahead, perl=TRUE))
         ids <- which(sapply(sapply(street.tail, str_split, ' |-| and '), length) > 2)
@@ -557,7 +557,7 @@ explode.cityStateZip <- function(DT, study.cities){
     city <- data.table(sapply(cityStateZip,function(y) str_extract(y,pattern=regex(pattern.city, perl=TRUE)),simplify=TRUE, USE.NAMES = FALSE ))
     setnames(city, names(city), 'city')
     zip <- sapply(cityStateZip, extract.zip, USE.NAMES = FALSE)
-    state.regex <- paste0('(?= )', paste0(lookup.state$abb, collapse='|'), '(?=( |,))')
+    state.regex <- paste0('(?= )', paste0(methods.string::lookup.state$abb, collapse='|'), '(?=( |,))')
     state <- str_extract(cityStateZip, regex(state.regex, perl=TRUE))
     x <- data.table(city, state, zip)
     setnames(x, names(x), c('city', 'zstate', 'zip'))
@@ -595,7 +595,7 @@ explode.street <- function(street){
                                  street.num.low = '', street.num.hi = '', street.last = '', street.second.last = '')
 
     # Initialize direction abbrev matches
-    abbrev.direction <- abbrev[class=='compass']
+    abbrev.direction <- methods.string::abbrev[class=='compass']
     search.direction <- abbrev.direction$search.regex
     return.direction <- abbrev.direction$return
     names(return.direction) <- search.direction
@@ -641,7 +641,7 @@ explode.street <- function(street){
     street.explode <- parcels.street.second.last(update.log, street.explode)
     street.cum.word.count <- word.count(street.explode$street.cum)
     '3280 Boulder Cir Bldg G4 West'
-    search.set <- c(abbrev[class=='unit'|class=='suffix', search],'')
+    search.set <- c(methods.string::abbrev[class=='unit'|class=='suffix', search],'')
     update.log <- !(street.explode$street.last %in% search.set) & !(street.explode$street.second.last %in% search.set)
     street.explode <- street.explode[update.log, street.last := paste(street.second.last, street.last)]
     street.explode <- parcels.street.second.last(update.log, street.explode)
@@ -650,13 +650,13 @@ explode.street <- function(street){
     ## Step 0.0: First swipe of  street.unit (no street.type)
     ### Debug 9, 10, 11, 13, 14
     street.explode <- street.explode[str_detect(street.last, regex('(?<=(^|-))[0-9]{1,}(?=$)', perl=TRUE)) &
-                                         !(street.second.last %in% abbrev[class=='unit', search]),
+                                         !(street.second.last %in% methods.string::abbrev[class=='unit', search]),
                                      street.unit:=street.last]
     ### Debug 15 '6390 Gunpark Dr B'
     x <- street.explode
-    c1 <- !(x$street.second.last %in% abbrev[class=='unit', search])
-    c2 <- !(x$street.last %in% abbrev[class=='suffix', search])
-    c3 <- !(x$street.last %in% abbrev[class=='compass', search])
+    c1 <- !(x$street.second.last %in% methods.string::abbrev[class=='unit', search])
+    c2 <- !(x$street.last %in% methods.string::abbrev[class=='suffix', search])
+    c3 <- !(x$street.last %in% methods.string::abbrev[class=='compass', search])
     c4 <- x$street.last !=''
     c5 <- str_detect(x$street.last, regex('[A-z]{3,}$', perl=TRUE))==FALSE  #"4845 Van Gordon
     logical <- cbind(c1,c2,c3,c4,c5)
@@ -675,14 +675,14 @@ explode.street <- function(street){
     street.explode <- parcels.street.direction.suffix(street.explode, return.direction, abbrev.direction)
 
     ## Step 1: Revisit street.unit, street.unit.type
-    regex.unit <- paste0(paste(abbrev[class=='unit', return], collapse = '|'))
-    unit.set <- abbrev[class=='unit', search]
+    regex.unit <- paste0(paste(methods.string::abbrev[class=='unit', return], collapse = '|'))
+    unit.set <- methods.string::abbrev[class=='unit', search]
     street.unit.base <- street.explode$street.unit
     update.log <- street.explode$street.second.last %in% unit.set & street.unit.base==''
     street.explode <- street.explode[update.log, street.unit:= street.last]
 
     search.unit.type <- paste0('(?<=^)',unit.set,'(?=$)')
-    return.unit.type <- abbrev[class=='unit', return]
+    return.unit.type <- methods.string::abbrev[class=='unit', return]
     names(return.unit.type) <- search.unit.type
 
     street.explode <- street.explode[update.log,
@@ -700,7 +700,7 @@ explode.street <- function(street){
     # Step 3 Assign street.type
     ## Speed up
     street.types <- unique(street.explode$street.last)
-    abbrev.street.type <- abbrev[class=='suffix' & search %in% street.types]
+    abbrev.street.type <- methods.string::abbrev[class=='suffix' & search %in% street.types]
     # Debug 16
     #if (nrow(abbrev.street.type) >0){
     search.regex.street.type <- paste0('(?i)(?<=^)(',abbrev.street.type$search,')(?=$)')
@@ -755,7 +755,7 @@ explode.street <- function(street){
 #' @import stringr
 extract.state = function(cityStateZip){
     cityStateZip <- clean.state(cityStateZip)
-    regex.state.abb <- paste0('(',paste0(lookup.state$abb, collapse='|'), ')')
+    regex.state.abb <- paste0('(',paste0(methods.string::lookup.state$abb, collapse='|'), ')')
     state <- str_extract(cityStateZip, regex(regex.state.abb, perl=TRUE))
     return(state)
 }
@@ -788,8 +788,8 @@ fill.missing.state <- function(x){
     zip.find <- NULL
     dt <- x[, .(zip.find=zip, address.id)]
     setkey(dt, zip.find)
-    setkey(lookup.zips,zip)
-    dt <- lookup.zips[dt]
+    setkey(methods.string::lookup.zips,zip)
+    dt <- methods.string::lookup.zips[dt]
     # county by state and fill
     states.found <- table(dt$state)
     states.found <- states.found[str_length(names(states.found))==2]
