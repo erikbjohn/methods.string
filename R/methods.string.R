@@ -55,6 +55,28 @@ clean.city <- function(cityStateZip, study.cities){
     cityStateZip <- str_replace_all(cityStateZip, regex('[ ]{1,}', perl=TRUE), ' ')
     return(cityStateZip)
 }
+#' @title clean.name
+#'
+#' @description Clean an d sanitize business (location) names
+#' @param name character vector with names
+#' @keywords clean anems
+#' @import stringr
+clean.name <- function(name){
+    name <- gsub('THE PLEASURE CAF\x83 LLC', 'THE PLEASURE CAFE LLC', name)
+    name <- str_trim(gsub('\\&.*.\\;', "'", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub('\\&.*.\\;', "'", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub(',|\\.', "", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub('Inc\\_', "Inc", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub("'", "", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub("\\-", "", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub('[^[:alnum:] ]', "", name, ignore.case = TRUE, perl=TRUE))
+    name <- str_trim(gsub('[\\_]{2,}', '', name, perl=TRUE))
+    name <- str_trim(gsub('( llc| inc)(?= |$)', " ", name, ignore.case = TRUE, perl=TRUE))
+    name <- gsub('\\s{2,}',' ', name, perl=TRUE)
+    name <- gsub('\\.','', name, perl=TRUE)
+    name <- str_to_title(name)
+    return(name)
+}
 #' @title clean.special
 #'
 #' @description Cleans up some custom strings in the c*star rent data.
