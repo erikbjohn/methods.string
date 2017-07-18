@@ -55,6 +55,31 @@ clean.city <- function(cityStateZip, study.cities){
     cityStateZip <- str_replace_all(cityStateZip, regex('[ ]{1,}', perl=TRUE), ' ')
     return(cityStateZip)
 }
+#' @title clean.lic.type
+#'
+#' @description cleans marijuana license type for mmed locations
+#' @param license.type character vector
+#' @keywords city, license, lic, type
+#' @export
+#' @import stringr
+#'     data.table
+clean.lic.type <- function(license.type){
+    license.type <- str_trim(str_to_title(license.type))
+    license.type <- gsub('Mmj Center License ', 'Center - ', license.type)
+    return(license.type)
+}
+#' @title clean.lic.num
+#'
+#' @description cleans marijuana license number
+#' @param license.num character vector
+#' @keywords city, license, lic, num, number
+#' @export
+#' @import stringr
+#'     data.table
+clean.lic.num <- function(license.num){
+    license.num <- str_trim(str_to_title(license.num))
+    return(license.num)
+}
 #' @title clean.name
 #'
 #' @description Clean an d sanitize business (location) names
