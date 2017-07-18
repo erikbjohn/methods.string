@@ -4,10 +4,10 @@
 \alias{clean.state}
 \title{clean.state}
 \usage{
-clean.state(state)
+clean.state(cityStateZip)
 }
 \arguments{
-\item{state}{state input}
+\item{cityStateZip}{character vector}
 }
 \description{
 Just returns CO if state is missing.

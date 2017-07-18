@@ -1,0 +1,29 @@
+---
+title: "methods.string"
+author: "Erik Johnson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette illustrates how to use the methods.string package. Currently the methods.string package focuses on address explosion and cleaning.
+
+```{r setup}
+library(methods.string)
+data(abbrev)
+data(study.cities)
+data(study.zips)
+```
+
+## explode.address
+Cleans and formats street and explodes to parts (uses. clean.street, clean.street.num, clean.street.unit)
+```{r, results='asis', eval=TRUE}
+library(xtable)
+library(data.table)
+DT <- data.table(street = c('15408-10 16th Street, Units 1A-B', '2400 Midway Boulevard'), cityStateZip = c('Dever, Colorada, 80206', 'Denaver, CO'))
+DT.explode <- explode.address(DT, study.cities, abbrev)
+xtable::xtable(DT.explode)
+```

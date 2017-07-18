@@ -1,6 +1,6 @@
 Package: methods.string
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Cleans and explodes addresses
 Version: 0.1.0
 Author: Erik Johnson
 Maintainer: Erik Johnson <erikbjohn@gmail.com>
@@ -8,12 +8,16 @@ Description: Address string cleaning functions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     stringr,
     stringdist,
     tidyr, 
     dplyr,
     utils,
     stats,
-    data.table
+    data.table,
+    xtable
 RoxygenNote: 6.0.1.9000
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
