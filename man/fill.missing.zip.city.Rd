@@ -4,14 +4,12 @@
 \alias{fill.missing.zip.city}
 \title{fill.missing.zip.city}
 \usage{
-fill.missing.zip.city(DT, lookup.address, study.cities)
+fill.missing.zip.city(DT, lookup.address = NULL)
 }
 \arguments{
 \item{DT}{data.table with exploded zip city state}
 
 \item{lookup.address}{data.table used for lookup values}
-
-\item{study.cities}{character vector with city names. Default: colorado cities}
 }
 \description{
 Fills missing zip and city by looking up in lookup.address if it exists.

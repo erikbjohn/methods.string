@@ -554,7 +554,7 @@ explode.address <- function(DT, study.cities, lookup.address=NULL){
     DT$street <- NULL
     DT <- unique(DT)
     if(!is.null(lookup.address)){
-        DT <- fill.missing.zip.city(DT, lookup.address, study.cities) # from erikbjohn/location package
+        DT <- fill.missing.zip.city(DT, lookup.address) # from erikbjohn/location package
     }
     return(DT)
 }
@@ -845,13 +845,12 @@ fill.missing.state <- function(x){
 #' @description Fills missing zip and city by looking up in lookup.address if it exists.
 #' @param DT data.table with exploded zip city state
 #' @param lookup.address data.table used for lookup values
-#' @param study.cities character vector with city names. Default: colorado cities
 #' @keywords fill missing, zip, city, state
 #' @export
 #' @import stringr
 #'     data.table
 #' @importFrom dplyr mutate select one_of group_by_
-fill.missing.zip.city <- function(DT, lookup.address, study.cities){
+fill.missing.zip.city <- function(DT, lookup.address=NULL){
     city <- NULL
     street.num <- NULL
     num.distance <- NULL
