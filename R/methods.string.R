@@ -85,6 +85,7 @@ clean.lic.num <- function(license.num){
 #' @description Clean an d sanitize business (location) names
 #' @param name character vector with names
 #' @keywords clean anems
+#' @export
 #' @import stringr
 clean.name <- function(name){
     name <- gsub('THE PLEASURE CAF\x83 LLC', 'THE PLEASURE CAFE LLC', name)
@@ -107,6 +108,7 @@ clean.name <- function(name){
 #' @description create a unique name key
 #' @param name character vector with names
 #' @keywords clean anems
+#' @export
 #' @import stringr
 clean.name.key <- function(name){
     name <- str_trim(gsub('\\&.*.\\;', "'", name, ignore.case = TRUE, perl=TRUE))
@@ -134,6 +136,7 @@ clean.name.key <- function(name){
 #' @param DT datatable with address info, city, street.type, street.direction.prefix, street.body
 #' @param DT.name string flag for c*rent
 #' @keywords special clean for some weird exceptions (Denver does not have any north)
+#' @export
 #' @import data.table
 clean.special <- function(DT, DT.name=''){
     data.id <- NULL
@@ -164,6 +167,8 @@ clean.special <- function(DT, DT.name=''){
 #' @param cityStateZip character vector
 #' @keywords silly, colorodo
 #' @export
+#' @import stringr
+#'     data.table
 clean.state <- function(cityStateZip){
     state.name <- NULL
     name <- NULL
