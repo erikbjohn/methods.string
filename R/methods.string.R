@@ -849,7 +849,7 @@ fill.missing.state <- function(x){
 #' @export
 #' @import stringr
 #'     data.table
-#' @importFrom dplyr mutate select one_of group_by_
+#' @importFrom dplyr mutate select one_of group_by_ fllter
 fill.missing.zip.city <- function(DT, lookup.address=NULL){
     city <- NULL
     street.num <- NULL
