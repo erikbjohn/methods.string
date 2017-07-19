@@ -23,7 +23,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @import stringr
 #'     data.table
 #'     stringdist
-clean.city <- function(cityStateZip, study.cities){
+clean.city <- function(cityStateZip, study.cities=NULL){
+    if(is.null(study.cities)){
+        study.cities <- methods.string::study.cities
+    }
     city.replace <- NULL
     city <- NULL
     # city state zip

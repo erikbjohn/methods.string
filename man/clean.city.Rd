@@ -4,7 +4,7 @@
 \alias{clean.city}
 \title{clean.city}
 \usage{
-clean.city(cityStateZip, study.cities)
+clean.city(cityStateZip, study.cities = NULL)
 }
 \arguments{
 \item{cityStateZip}{character vector}
