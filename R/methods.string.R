@@ -849,7 +849,7 @@ fill.missing.state <- function(x){
 #' @export
 #' @import stringr
 #'     data.table
-#' @importFrom dplyr mutate select one_of group_by_ fllter
+#'     dplyr
 fill.missing.zip.city <- function(DT, lookup.address=NULL){
     city <- NULL
     street.num <- NULL
@@ -928,7 +928,7 @@ fill.missing.zip.city <- function(DT, lookup.address=NULL){
             DT.lookup <- DT.lookup[, num.distance:=abs(street.num-street.num.lookup)]
 
             DT.lookup <-   DT.lookup %>%
-                group_by_(.dots=list(val.id)) %>%
+                dplyr::group_by_(.dots=list(val.id)) %>%
                 filter(rank(-num.distance, ties.method='first')==1)
             DT.lookup <- as.data.table(DT.lookup)
             DT.lookup <- DT.lookup[!is.na(street.num)]
