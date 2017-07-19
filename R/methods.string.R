@@ -896,7 +896,9 @@ fill.missing.zip.city <- function(DT, lookup.address=NULL){
         DT.missing <- DT[eval(lookup.val)=='']
         n.missing <- nrow(DT.missing)
         if(n.missing>0){
-            if(exists('DT.lookup')) rm(DT.lookup)
+            if(exists('DT.lookup')){
+                rm(DT.lookup)
+            }
             DT.lookup <- DT.missing[, street.num := as.numeric(street.num)] #Not sure about this
             full.vars <- c(lookup.var, key.vars)
             #key.vals <- lapply(key.vars, as.symbol)
