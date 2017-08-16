@@ -205,6 +205,7 @@ clean.state <- function(cityStateZip){
 #'
 #' @description Cleans up and standardizes street string. Needed for the street.explode function.
 #' @param street character vector of streets
+#' @param l.regex helper function since data.table not parallelizable
 #' @keywords street.explode
 #' @export
 #' @import stringr
@@ -328,7 +329,7 @@ clean.street <- function(street, l.regex){
         #     street <- str_replace_all(street, str.replace)
         # }
         # Step 3: Get rid of extra spaces and return
-      
+
         # Remove two unit suffixes
         reg.unit <- paste0('(',paste0(paste0(' ',l.regex$x, ' '), collapse='|'),')')
         ids <- which(sapply(str_split(street, reg.unit), length)>2)
@@ -353,15 +354,15 @@ clean.street <- function(street, l.regex){
             }
         }
         # street <- '2675 South Santa Fe Drive Building 6 Unit F Gandh' abc(?!.*abc)
-        pattern.neg.ahead <- paste0(s,'(?!.*',s,')')
+        pattern.neg.ahead <- paste0(l.regex$s,'(?!.*',l.regex$s,')')
         pattern.detect <-'.*[\\w]{0,1}and[\\w]{0,1}.*'
         pattern <- paste0(pattern.neg.ahead, pattern.detect)
         step.1 <- str_extract(street, regex(pattern, perl=TRUE))
-        ids <- which(str_detect(step.1, regex(paste0('(?<=',s,') '), perl=TRUE)))
+        ids <- which(str_detect(step.1, regex(paste0('(?<=',l.regex$s,') '), perl=TRUE)))
         if (length(ids)>0){
             street.sub <- street[ids]
             extract.sub <- str_extract(street.sub, regex(pattern, perl=TRUE))
-            replace.sub <- str_extract(extract.sub, regex(paste0(s, '( [:alnum:])'),perl=TRUE))
+            replace.sub <- str_extract(extract.sub, regex(paste0(l.regex$s, '( [:alnum:])'),perl=TRUE))
             search.sub <- paste0(extract.sub,'(?=$)')
             names(replace.sub) <- search.sub
             street[ids] <- str_replace_all(street[ids], replace.sub)
@@ -398,6 +399,7 @@ clean.street <- function(street, l.regex){
 #'     data.table
 #'     stats
 clean.street.regex <- function(){
+  class <- NULL; search <- NULL; collapse <- NULL
   l.regex <- list()
   l.regex$intersection <- paste0('(?<= ',paste0(methods.string::abbrev[class=='suffix' & search!='Wy', search], collapse='|'),')and')
   units<- paste0(methods.string::abbrev[class=='unit' & search != '#',search],collapse='|')
@@ -584,7 +586,7 @@ explode.address <- function(DT, study.cities, lookup.address=NULL){
 #' @import stringr
 #'     data.table
 #'     stats
-explode.cityStateZip <- function(DT){
+explode.cityStateZip <- function(DT, study.cities){
     regex.study.cities <- paste0(study.cities, collapse='|')
     x <- DT
     address.cols <- na.omit(str_extract(names(x), regex('(?i)(?=^)(address$|cityStateZip)', perl=TRUE)))
@@ -647,7 +649,7 @@ explode.street <- function(street){
     street <- unlist(mclapply(street, function(y) clean.street(y, l.regex), mc.cores = n.cores))
     toc <- Sys.time()
     difftime(toc, tic, 'mins')
-    
+
     street.explode <- data.table(street=street, street.num = '', street.direction.prefix = '', street.type = '',
                                  street.unit = '', street.unit.type = '', street.direction.suffix='',
                                  street.num.low = '', street.num.hi = '', street.last = '', street.second.last = '')

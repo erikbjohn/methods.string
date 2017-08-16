@@ -4,10 +4,12 @@
 \alias{clean.street}
 \title{clean.street}
 \usage{
-clean.street(street)
+clean.street(street, l.regex)
 }
 \arguments{
 \item{street}{character vector of streets}
+
+\item{l.regex}{helper function since data.table not parallelizable}
 }
 \description{
 Cleans up and standardizes street string. Needed for the street.explode function.

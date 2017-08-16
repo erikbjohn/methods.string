@@ -11,12 +11,12 @@ vignette: >
 
 This vignette illustrates how to use the methods.string package. Currently the methods.string package focuses on address explosion and cleaning.
 
-```{r setup}
+```{r setup, eval=FALSE}
 library(methods.string)
 library(data.table)
 library(knitr)
-data(abbrev)
-data(study.cities)
+abbrev
+study.cities
 
 DT <- data.table(street = c('15408-10 16th Street, Units 1A-B', '2400 Midway Boulevard'), cityStateZip = c('Dever, Colorada, 80206', 'Denaver, CO'))
 DT.explode <- explode.address(DT, study.cities)
@@ -25,13 +25,13 @@ DT.explode <- explode.address(DT, study.cities)
 ## explode.address
 Cleans and formats street and explodes to parts (uses. clean.street, clean.street.num, clean.street.unit)
 Assume DT is a data.table as follows:
-```{r, results='asis', echo=FALSE }
+```{r, results='asis', echo=FALSE, eval=FALSE }
 kable(DT)
 ```
 
 Notice that there are numerous misspellings and street numbers can take a variety of ranges. Using the methods.string function \texttt{explode.address} cleans and explodes the addresses into component parts. 
 
-```{r, results='asis', echo=FALSE }
+```{r, results='asis', echo=FALSE, eval=FALSE }
 kable(DT.explode)
 ```
 
