@@ -172,6 +172,7 @@ clean.special <- function(DT, DT.name=''){
 #' @export
 #' @import stringr
 #'     data.table
+#'     stringdist
 clean.state <- function(cityStateZip){
     state.name <- NULL
     name <- NULL
