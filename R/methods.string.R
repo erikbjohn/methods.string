@@ -575,7 +575,7 @@ explode.address <- function(DT, study.cities, lookup.address=NULL){
 explode.cityStateZip <- function(DT){
     regex.study.cities <- paste0(study.cities, collapse='|')
     x <- DT
-    address.cols <- na.omit(str_extract(names(x), '(?i)cityStateZip($|.*.)'))
+    address.cols <- na.omit(str_extract(names(x), regex('(?i)(?=^)address|cityStateZip', perl=TRUE)))
     address.col <- names(which.max(lapply(x[,(address.cols),with=FALSE], function(y) length(na.omit(y)))))[1]
     x <- x[, (address.col), with=FALSE]
     # Clean state (must do this first)
