@@ -179,7 +179,7 @@ clean.state <- function(cityStateZip){
     state.replace <- NULL
     x <- cityStateZip
     x <- str_extract(x, regex('(?<= ).+', perl=TRUE))
-    states <- unlist(str_split(x, regex(' ', perl=TRUE)))
+    states <- unlist(str_split(x, regex(', ', perl=TRUE)))
     # Those without abbreviations
     state.search <- unique(states)
     state.search <- state.search[str_length(state.search)>2 & !grepl('[0-9]{1,}', state.search)]
