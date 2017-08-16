@@ -571,7 +571,7 @@ explode.address <- function(DT, study.cities, lookup.address=NULL){
 #' @import stringr
 #'     data.table
 #'     stats
-explode.cityStateZip <- function(DT, study.cities){
+explode.cityStateZip <- function(DT){
     regex.study.cities <- paste0(study.cities, collapse='|')
     x <- DT
     address.cols <- na.omit(str_extract(names(x), '(?i).*.address|cityStateZip($|.*.)'))

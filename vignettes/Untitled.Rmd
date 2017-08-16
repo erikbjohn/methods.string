@@ -1,0 +1,103 @@
+---
+title: "\\textbf{Syllabus}: Economics 508 Microeconomic Theory Fall 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#
+
+## Professor: Dr. Erik Johnson
+
+*   Office: 267 Alston Hall
+*   Email: ebjohnson5@cba.ua.edu
+*   Course Webpage: \href{https://ualearn.blackboard.com}{UA Blackboard}
+*   Office Hours: T 9:00AM-12:00PM
+*   Time and Location: 5:00 pm - 6:15pm, TR, Bidgood Hall 215
+
+This course is a rigorous introduction to microeconomic theory.
+
+## Textbooks: 
+
+The course readings will come from the required text and supplemental readings
+handed out throughout the semester.
+
+*   (Required) Microeconomics with Calculus. Binger and Hoffman. Second Edition
+
+## Grading:
+There will be 4 exams. They will count toward your grade as follows:
+
+*   Best Exam 35%
+*   Second Best Exam 34%
+*   Third Best Exam 31%
+*   Worst Exam 0%
+
+There are no make-up exams. If you need to miss an exam it will count as your dropped
+exam. Extraordinary cases (with documentation) will be handled on a case by case basis.
+Travel plans are not extraordinary. The final will take place at the University scheduled
+place and time. The other exams will be scheduled after we have completed the appropriate
+amount of material. Problem sets will be handed out in class, but shall not be collected.
+These problems are challenging and designed for you to have to think. I will periodically post
+solutions and hold Q&A sessions related to the problem sets before exams. These problem
+sets are your chance to practice using the concepts we learn in class and will reflect the type
+of material you are likely to see on exams. I will review a subset of the problems prior to
+each exam. Solutions will be posted on the course website listed above before each midterm.
+While I will do my best to follow the format suggested by the syllabus, I reserve the right
+to make changes if they are in the best interest for all students.
+
+## Description of the Course: 
+### Topic 1: Mathematical Tools for Microeconomics
+
+1.  Basic Mathematical Concepts
+2.  Unconstrained Maximization
+3.  Constrained Maximization
+4.  Envelope Theorem and Comparative Statics
+
+### Topic 2: Consumer Choice Theory
+1.  Lecture 5: Introduction to Economic Theory
+2.  Lecture 6: Consumer Preference Theory
+3.  Lecture 7: Marshallian Demand
+4.  Lecture 8: Hicksian Demand and the Slutsky Equation
+5.  Lecture 9: Market Demand and Elasticity
+
+### Topic 3: Producer Choice Thoery
+1.  Producer Input Choice Theory and Minimum Cost Functions
+2.  Producer Output Choice Theory: Perfect Competition
+3.  Producer Output Choice Theory: Monopoly
+
+### Topic 4: Oligopoly, Game Theory, General Equilibrium
+1.  Oligopoly
+2.  Game Theory
+3.  General Equilibrium
+
+## Attendance Policy: 
+Class attendance is your responsibility. I will not directly reward
+attendance or punish lack of attendance. Please be aware that you are responsible for
+the lecture material as well as the book reading for examinations. I do not accept late
+assignments.
+
+## Academic Dishonesty Policy:
+All students in attendance at the University of Alabama are expected to be honorable and to observe standards of conduct appropriate to
+a community of scholars. The University expects from its students a higher standard of
+conduct than the minimum required to avoid discipline. Academic misconduct includes all
+acts of dishonesty in any academically related matter and any knowing or intentional help
+or attempt to help, or conspiracy to help, another student. The Academic Misconduct
+Disciplinary Policy will be followed in the event of academic misconduct.
+
+## Disability Access Statement:
+If you are registered with the Office of Disability Services, please make an appointment with me as soon as possible to discuss any course accommodations that may be necessary. If you have a disability, but have not contacted the
+Office of Disability Services, please call 348-4285 or visit 133-B Martha Parham Hall East to
+register for services. Students who may need course adaptations because of a disability are
+welcome to make an appointment to see me during o¢ ce hours. Students with disabilities
+must be registered with the O¢ ce of Disability Services, 133-B Martha Parham Hall East,
+before receiving academic adjustments.
+
+## ACT Statement:
+\quote{UAct: The University of Alabama is committed to an ethical, in-
+clusive community defined by respect and civility. The UAct website (www.ua.edu/uact)
+provides extensive information on how to report or obtain assistance with a variety of is-
+sues, including issues related to dating violence, domestic violence, stalking, sexual assault,
+sexual violence or other Title IX violations, illegal discrimination, harassment, child abuse
+or neglect, hazing, threat assessment, retaliation, and ethical violations or fraud.}
