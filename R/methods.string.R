@@ -594,7 +594,7 @@ explode.cityStateZip <- function(DT){
     state.regex <- paste0('(?= )', paste0(methods.string::lookup.state$abb, collapse='|'), '(?=( |,))')
     state <- str_extract(cityStateZip, regex(state.regex, perl=TRUE))
     x <- data.table(city, state, zip)
-    setnames(x, names(x), c('city', 'zstate', 'zip'))
+    setnames(x, names(x), c('city', 'state', 'zip'))
     return(x)
 }
 #' @title explode.street
