@@ -15,7 +15,8 @@ Imports:
     dplyr,
     utils,
     stats,
-    data.table
+    data.table,
+    parallel
 RoxygenNote: 6.0.1.9000
 Suggests: knitr,
     rmarkdown

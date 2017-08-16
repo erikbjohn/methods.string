@@ -210,7 +210,7 @@ clean.state <- function(cityStateZip){
 #' @import stringr
 #'     data.table
 #'     stats
-clean.street <- function(street){
+clean.street <- function(street, l.regex){
    street.base <-''
     iter <- 0
     while(identical(street, street.base)==FALSE & iter < 6){
@@ -226,16 +226,13 @@ clean.street <- function(street){
         street <- str_replace(street, 'South Boulder', 'SouthBoulder')
 
         #street <- '28 StandBrighton Blvd'
-        regex.intersection <- paste0('(?<= ',paste0(methods.string::abbrev[class=='suffix' & search!='Wy', search], collapse='|'),')and')
-        street <- str_replace(street,regex(regex.intersection, perl=TRUE), ' and ')
+        street <- str_replace(street,regex(l.regex$intersection, perl=TRUE), ' and ')
 
         #E 17Th Ave @ Park Avenue West'
         street <- str_replace(street, '@', 'and')
 
         #Ste 300 425 S Wilcox St', 'Suite 2400 1600 Broadway'
-        units<- paste0(methods.string::abbrev[class=='unit' & search != '#',search],collapse='|')
-        regex.unit.start <- paste0('(?i)(?<=^)(',units,')\\s[0-9]{1,}\\s(?=[0-9]{1,1})')
-        street <- str_replace(street, regex(regex.unit.start, perl=TRUE), '')
+        street <- str_replace(street, regex(l.regex$unit.start, perl=TRUE), '')
 
         #One Flatiron Circle Ste Ff232'
         str.nums <- as.character(1:10)
@@ -294,9 +291,8 @@ clean.street <- function(street){
         #"1997 And 2000 S Acoma St"'
         street <- str_replace(street,regex('(?<=[0-9]{1,1}) And (?=[0-9]{1,1})', perl=TRUE), '-')
         #990W 6Th Ave Unit 5'
-        abbrev.compass.search <- paste0(methods.string::abbrev[class=='compass',search], collapse='|')
-        str.extract <- str_extract(street,regex(paste0('(?<=^)[0-9]{1,}(',abbrev.compass.search,' )'), perl=TRUE))
-        str.direction <- str_extract(str.extract,regex(paste0('(',abbrev.compass.search,')'), perl=TRUE))
+        str.extract <- str_extract(street,regex(paste0('(?<=^)[0-9]{1,}(',l.regex$abbrev.compass.search,' )'), perl=TRUE))
+        str.direction <- str_extract(str.extract,regex(paste0('(',l.regex$abbrev.compass.search,')'), perl=TRUE))
         street <- str_replace(street, regex(paste0(str.direction),perl=TRUE), paste0(' ', str.direction))
         #"3740B E 40Th Ave"
         # bad.prefix <- str_detect(street, regex('(?<=^)([0-9]{1,}[A-z]{1,})(?=\\s)', perl=TRUE))
@@ -332,19 +328,15 @@ clean.street <- function(street){
         #     street <- str_replace_all(street, str.replace)
         # }
         # Step 3: Get rid of extra spaces and return
-        s <- paste0('(',paste0(paste0(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))])),collapse='|'),')')
-        x <- sapply(t(methods.string::abbrev[class=='unit' & search!='#', .(search, paste0(search,'s'))]), cbind, simplify=TRUE)
-
+      
         # Remove two unit suffixes
-        reg.unit <- paste0('(',paste0(paste0(' ',x, ' '), collapse='|'),')')
+        reg.unit <- paste0('(',paste0(paste0(' ',l.regex$x, ' '), collapse='|'),')')
         ids <- which(sapply(str_split(street, reg.unit), length)>2)
-        pattern.neg.ahead <- paste0('(?!.* ',paste0(s, collapse='|'),').*.')
+        pattern.neg.ahead <- paste0('(?!.* ',paste0(l.regex$s, collapse='|'),').*.')
         street[ids] <- str_trim(str_replace(street[ids], regex(paste0(str_extract(street[ids], regex(pattern.neg.ahead, perl=TRUE)),'(?=$)'), perl=TRUE),''))
 
         # street <- '4228 York Street Unit 104 106-107'
-        t <- paste0('(',paste0(paste0(sort(c(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Broadway'))),collapse=' |'),')')
-        u <- paste0('(',paste0(paste0(sort(c(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Bay', 'Broadway'))),collapse='|'),')')
-        pattern.neg.ahead <- paste0(t,'(?!.*',u,')(.*.|$)')
+        pattern.neg.ahead <- paste0(l.regex$t,'(?!.*',l.regex$u,')(.*.|$)')
         street.tail <- str_extract(street, regex(pattern.neg.ahead, perl=TRUE))
         ids <- which(sapply(sapply(street.tail, str_split, ' |-| and '), length) > 2)
 
@@ -396,6 +388,26 @@ clean.street <- function(street){
     if (iter==6) print(paste0('Error with clean.street',  cbind(street.base[which(street !=street.base)],street[which(street !=street.base)])))
     street <- str_trim(str_replace(street, regex('(?i)( LLC)', perl=TRUE), ' LLC'))
     return(street)
+}
+#' @title clean.street.regex
+#'
+#' @description Builds regex used in clean.street (depends on data.table which had mclapply bug in R 3.4.0)
+#' @keywords clean street regex
+#' @export
+#' @import stringr
+#'     data.table
+#'     stats
+clean.street.regex <- function(){
+  l.regex <- list()
+  l.regex$intersection <- paste0('(?<= ',paste0(methods.string::abbrev[class=='suffix' & search!='Wy', search], collapse='|'),')and')
+  units<- paste0(methods.string::abbrev[class=='unit' & search != '#',search],collapse='|')
+  l.regex$unit.start <- paste0('(?i)(?<=^)(',units,')\\s[0-9]{1,}\\s(?=[0-9]{1,1})')
+  l.regex$abbrev.compass.search <- paste0(methods.string::abbrev[class=='compass',search], collapse='|')
+  l.regex$s <- paste0('(',paste0(paste0(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))])),collapse='|'),')')
+  l.regex$x <- sapply(t(methods.string::abbrev[class=='unit' & search!='#', .(search, paste0(search,'s'))]), cbind, simplify=TRUE)
+  l.regex$t <- paste0('(',paste0(paste0(sort(c(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Broadway'))),collapse=' |'),')')
+  l.regex$u <- paste0('(',paste0(paste0(sort(c(unlist(methods.string::abbrev[class!='compass'&search!='#', .(search, paste0(search,'s'))]), 'Highway', 'Bay', 'Broadway'))),collapse='|'),')')
+  return(l.regex)
 }
 #' @title clean.street.num
 #'
@@ -605,6 +617,7 @@ explode.cityStateZip <- function(DT){
 #' @export
 #' @import stringr
 #'     data.table
+#'     parallel
 explode.street <- function(street){
     parcels.street.last <- NULL
     street.body <- NULL
@@ -623,7 +636,18 @@ explode.street <- function(street){
     street.type<- NULL
     street.unit<- NULL
     street.unit.type<- NULL
-    street <- sapply(street, function(x) clean.street(x))
+    l.regex <- clean.street.regex()
+    # tic <- Sys.time()
+    # street <- sapply(street, function(x) clean.street(x, l.regex))
+    # toc <- Sys.time()
+    # difftime(toc, tic, 'mins')
+    tic <- Sys.time()
+    n.cores <- detectCores() - 2
+    n.cores <- max(n.cores, 1)
+    street <- unlist(mclapply(street, function(y) clean.street(y, l.regex), mc.cores = n.cores))
+    toc <- Sys.time()
+    difftime(toc, tic, 'mins')
+    
     street.explode <- data.table(street=street, street.num = '', street.direction.prefix = '', street.type = '',
                                  street.unit = '', street.unit.type = '', street.direction.suffix='',
                                  street.num.low = '', street.num.hi = '', street.last = '', street.second.last = '')
@@ -1084,6 +1108,7 @@ underscore <- function(x){
     x <- gsub('_', '', x, perl = TRUE)
     x <- gsub('-', '', x, perl = TRUE)
 }
+
 
 
 
