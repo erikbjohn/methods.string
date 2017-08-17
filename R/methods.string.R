@@ -17,16 +17,12 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' @description Extracts and cleans city from cityStateZip based on table lookup and matching.
 #' @param cityStateZip character vector
-#' @param study.cities character vector
 #' @keywords city, clean
 #' @export
 #' @import stringr
 #'     data.table
 #'     stringdist
-clean.city <- function(cityStateZip, study.cities=NULL){
-    if(is.null(study.cities)){
-        study.cities <- methods.string::study.cities
-    }
+clean.city <- function(cityStateZip){
     city.replace <- NULL
     city <- NULL
     # city state zip
@@ -39,9 +35,9 @@ clean.city <- function(cityStateZip, study.cities=NULL){
     x <- x[, city:=str_trim(str_to_title(city))]
     # Do some string matching
     city.search <- unique(x$city)
-    match.ids<-amatch(city.search, study.cities, method='soundex')
-    cities.soundex <- study.cities[match.ids]
-    cities.jw <- study.cities[amatch(city.search, study.cities, method='jw')]
+    match.ids<-amatch(city.search, methods.string::study.cities, method='soundex')
+    cities.soundex <- methods.string::study.cities[match.ids]
+    cities.jw <- methods.string::study.cities[amatch(city.search, methods.string::study.cities, method='jw')]
     city.table <- data.table(city.search, cities.soundex, cities.jw)
     city.table <- city.table[, city.replace:=cities.jw]
     city.table <- city.table[is.na(cities.jw), city.replace:=cities.soundex]
@@ -541,7 +537,6 @@ clean.street.unit <- function(vec.chars){
 #'
 #' @description Explodes a single string addresss using explode.street and explode.cityStateZip.
 #' @param DT data.table needs to have fields street, cityStateZip
-#' @param study.cities character vector
 #' @param lookup.address optional table from main data usually parcels.address
 #' @keywords street.num
 #' @export
@@ -549,13 +544,13 @@ clean.street.unit <- function(vec.chars){
 #'     data.table
 #'     tidyr
 #' @importFrom tidyr gather
-explode.address <- function(DT, study.cities, lookup.address=NULL){
+explode.address <- function(DT, lookup.address=NULL){
     street.num <- NULL
     street.num.low <- NULL
     street.num.hi <- NULL
     street.num.range <- NULL
     # Break out cityStateZip
-    cityStateZip <- explode.cityStateZip(DT, study.cities)
+    cityStateZip <- explode.cityStateZip(DT)
     DT$cityStateZip <- NULL
     DT <- data.table(DT, cityStateZip)
      # Break out street
@@ -580,14 +575,13 @@ explode.address <- function(DT, study.cities, lookup.address=NULL){
 #'
 #' @description Explodes cityStateZip into city state and zip
 #' @param DT data.table with column name containg address or cityStateZip
-#' @param study.cities character vector
 #' @keywords street.num
 #' @export
 #' @import stringr
 #'     data.table
 #'     stats
 explode.cityStateZip <- function(DT){
-    regex.study.cities <- paste0(study.cities, collapse='|')
+    regex.study.cities <- paste0(methods.string::study.cities, collapse='|')
     x <- DT
     address.cols <- na.omit(str_extract(names(x), regex('(?i)(?=^)(address$|cityStateZip)', perl=TRUE)))
     address.col <- names(which.max(lapply(x[,(address.cols),with=FALSE], function(y) length(na.omit(y)))))[1]
@@ -595,7 +589,7 @@ explode.cityStateZip <- function(DT){
     # Clean state (must do this first)
     x$cityStateZip <- clean.state(x$cityStateZip)
     # Clean city name
-    x$cityStateZip <- clean.city(x$cityStateZip, study.cities)
+    x$cityStateZip <- clean.city(x$cityStateZip)
     # First pass: Extract to the city
     # Find last 'city' location in string
     # abc(?!.*abc)

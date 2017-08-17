@@ -4,12 +4,10 @@
 \alias{explode.address}
 \title{explode.address}
 \usage{
-explode.address(DT, study.cities, lookup.address = NULL)
+explode.address(DT, lookup.address = NULL)
 }
 \arguments{
 \item{DT}{data.table needs to have fields street, cityStateZip}
-
-\item{study.cities}{character vector}
 
 \item{lookup.address}{optional table from main data usually parcels.address}
 }
